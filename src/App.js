@@ -62,10 +62,6 @@ const StyledApp = styled.div`
   }
 `;
 
-const StyledForm = styled.div`
-  margin: 0 auto;
-`;
-
 const CentralDiv = styled.div`
   display: flex;
   align-items: center;
@@ -125,7 +121,7 @@ class App extends Component {
       const results = await axios.get("http://localhost:5000/");
       this.setState({
         results: results.data,
-        curResults: results.data.slice(0, 5)
+        curResults: results.data.slice(0, this.state.perPage)
       });
     } catch (error) {
       console.log(error);
@@ -153,11 +149,14 @@ class App extends Component {
         //Get back all the post information to put into state
         const newPost = await axios.post("http://localhost:5000/", post);
         //Add the newPost to the state with the id included
-        this.setState({
-          title: "",
-          input: "",
-          results: [...this.state.results, newPost]
-        });
+        this.setState(
+          {
+            title: "",
+            description: "",
+            results: [...this.state.results, newPost.data]
+          },
+          this.calcCurResults
+        );
       } catch (err) {
         console.log(err);
       }
@@ -176,16 +175,7 @@ class App extends Component {
           {
             results: this.state.results.filter(post => post._id !== id)
           },
-          () => {
-            const nextResultsEnd = this.state.curPage * this.state.perPage;
-            const nextResultsStart = nextResultsEnd - this.state.perPage;
-            this.setState({
-              curResults: this.state.results.slice(
-                nextResultsStart,
-                nextResultsEnd
-              )
-            });
-          }
+          this.calcCurResults
         );
       }
     } catch (err) {
@@ -195,19 +185,27 @@ class App extends Component {
   };
 
   nextPageHandler = () => {
-    const nextResultsEnd = (this.state.curPage + 1) * this.state.perPage;
-    const nextResultsStart = nextResultsEnd - this.state.perPage;
-    this.setState({
-      curPage: this.state.curPage + 1,
-      curResults: this.state.results.slice(nextResultsStart, nextResultsEnd)
-    });
+    this.setState(
+      {
+        curPage: this.state.curPage + 1
+      },
+      this.calcCurResults
+    );
   };
 
   prevPageHandler = () => {
-    const nextResultsEnd = (this.state.curPage - 1) * this.state.perPage;
+    this.setState(
+      {
+        curPage: this.state.curPage - 1
+      },
+      this.calcCurResults
+    );
+  };
+
+  calcCurResults = () => {
+    const nextResultsEnd = this.state.curPage * this.state.perPage;
     const nextResultsStart = nextResultsEnd - this.state.perPage;
     this.setState({
-      curPage: this.state.curPage - 1,
       curResults: this.state.results.slice(nextResultsStart, nextResultsEnd)
     });
   };
