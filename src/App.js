@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import axios from 'axios';
+import React, { Component } from "react";
+import styled from "styled-components";
+import axios from "axios";
 
 const StyledApp = styled.div`
   width: 100vw;
@@ -25,54 +25,43 @@ const StyledForm = styled.div`
 
 class App extends Component {
   state = {
-    titleInput: '',
-    descriptionInput: '',
+    title: "",
+    description: "",
     results: [], //placeholder for later
-    curPage: []  //placeholder for later
-  }
-
-  async componentDidMount() {
-    try {
-      const results = await axios.get('http://localhost:5000/');
-      this.setState({
-        results: results.data
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
+    curPage: [], //placeholder for later
+    perPage: 5, //placeholder for later
+    curPage: 1 //placeholder for later
+  };
 
   changeHandler = e => {
     this.setState({
       [e.target.name]: e.target.value
     });
-  }
+  };
 
   submitHandler = () => {
     //not built yet as I need to figure out how to have this be sent to mongo cloud db
-  }
+  };
 
   render() {
     return (
       <StyledApp>
         <StyledForm>
           <form onSubmit={this.submitHandler}>
-            <input 
-            type="text"
-            placeholder="Enter a title..."
-            onChange={this.changeHandler}
-            value={this.state.titleInput} 
-            name="title"
-              />
-            <input 
-              type="text" 
-              placeholder="Enter a description..." 
-              onChange={this.changeHandler} 
-              value={this.state.descriptionInput} 
+            <input
+              type="text"
+              placeholder="Enter a title..."
+              onChange={this.changeHandler}
+              value={this.state.title}
+              name="title"
+            />
+            <input
+              type="text"
+              placeholder="Enter a description..."
+              onChange={this.changeHandler}
+              value={this.state.description}
               name="description"
             />
-            {this.state.results.map(item => <p key={item._id}>{item.title} {item.description}</p>)}
           </form>
         </StyledForm>
       </StyledApp>
