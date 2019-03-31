@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const StyledApp = styled.div`
   width: 100vw;
@@ -30,6 +31,18 @@ class App extends Component {
     curPage: []  //placeholder for later
   }
 
+  async componentDidMount() {
+    try {
+      const results = await axios.get('http://localhost:5000/');
+      this.setState({
+        results: results.data
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   changeHandler = e => {
     this.setState({
       [e.target.name]: e.target.value
@@ -59,6 +72,7 @@ class App extends Component {
               value={this.state.descriptionInput} 
               name="description"
             />
+            {this.state.results.map(item => <p key={item._id}>{item.title} {item.description}</p>)}
           </form>
         </StyledForm>
       </StyledApp>
